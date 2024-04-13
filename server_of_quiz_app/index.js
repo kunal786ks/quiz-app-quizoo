@@ -1,6 +1,6 @@
 const express=require('express');
 const dotenv=require('dotenv');
-
+const cors=require('cors');
 const connectDB=require('./config/db')
 
 const testRouter=require('./routes/testRoutes');
@@ -12,7 +12,12 @@ dotenv.config();
 
 const app=express();
 connectDB()
-
+app.use(
+    cors({
+      origin: "http://localhost:3000", //frontend  url
+      credentials: true,
+    })
+  );
 app.use(express.json());
 
 const PORTS=process.env.PORT;

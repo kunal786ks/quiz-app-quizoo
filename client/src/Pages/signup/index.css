@@ -1,0 +1,8 @@
+.signup-image-container {
+  background-image: url("../../assests/images/signup_image.png");
+  background-size: cover;
+  background-position: center;
+  height: 90vh;
+  width: 100%;
+  border-radius: 50px;
+}
