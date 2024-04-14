@@ -1,7 +1,8 @@
 const { generateToken } = require("../config/tokenServuce");
 const userModel = require("../model/userModel");
 const bcrypt = require("bcrypt");
-
+const { replaceSpacesWithPercent20 } = require("../lib/imageService");
+const { sendMail } = require("../config/mailService");
 const registerUser = async ({ name, email, password }) => {
   try {
     if (!name || !email || !password) {
@@ -43,29 +44,181 @@ const loginUser = async ({ email, password }) => {
         message: "All required feilds are not present",
       });
     }
-    const user=await userModel.findOne({email});
-    if(!user){
-        throw Object.assign(new Error(),{name:"CONFLICT",message:"User with this email doesn't exist"})
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      throw Object.assign(new Error(), {
+        name: "CONFLICT",
+        message: "User with this email doesn't exist",
+      });
     }
     const isMatchPassword = await bcrypt.compare(password, user.password);
-    if(!isMatchPassword){
-        throw Object.assign(new Error(),{name:"UNAUTHORIZED",message:"Password incorrect"})
+    if (!isMatchPassword) {
+      throw Object.assign(new Error(), {
+        name: "UNAUTHORIZED",
+        message: "Password incorrect",
+      });
     }
-    const token=generateToken(user);
-    const userData={
-        token,
-        user
-    }
-    return {userData}
+    const token = generateToken(user);
+    const userData = {
+      token,
+      user,
+    };
+    return { userData };
   } catch (error) {
     throw error;
   }
 };
 
+const UdapteProfilePicUser = async (req) => {
+  try {
+    const id = req.params.userId;
+    if (!id) {
+      throw Object.assign(new Error(), {
+        name: "BAD_REQUEST",
+        message: "userId is required",
+      });
+    }
+    const userFound = await userModel.findById(id);
+    if (!userFound) {
+      throw Object.assign(new Error(), {
+        name: "NOT_FOUND",
+        message: "User with id not found",
+      });
+    }
+    let image_url;
+    if (req.file?.filename) {
+      image_url = replaceSpacesWithPercent20(`/images/${req.file?.filename}`);
+    }
+    userFound.pic = image_url;
+    await userFound.save();
+    return { userFound };
+  } catch (error) {
+    throw error;
+  }
+};
+const deleteUser = async (req) => {
+  try {
+    const id = req.params.userId;
+    if (!id) {
+      throw Object.assign(new Error(), {
+        name: "BAD_REQUEST",
+        message: "userId is required",
+      });
+    }
+    const userFound = await userModel.findByIdAndDelete(id);
+    if (!userFound) {
+      throw Object.assign(new Error(), {
+        name: "NOT_FOUND",
+        message: "User with id not found",
+      });
+    }
+    return;
+  } catch (error) {
+    throw error;
+  }
+};
 
-const userService={
-    loginUser,
-    registerUser
-}
+const isEmptyObject = (obj) => {
+  return Object.keys(obj).length === 0;
+};
 
-module.exports=userService
+const updateUser = async (req) => {
+  try {
+    const id = req.params.userId;
+    if (!id) {
+      throw Object.assign(new Error(), {
+        name: "BAD_REQUEST",
+        message: "userId is required",
+      });
+    }
+    if (isEmptyObject(req.body)) {
+      throw Object.assign(new Error(), {
+        name: "BAD_REQUEST",
+        message: "One field is required to update",
+      });
+    }
+    const userFound = await userModel.findById(id);
+    if (req.body.email) {
+      userFound.email = req.body.email;
+    }
+    if (req.body.name) {
+      userFound.name = req.body.name;
+    }
+    await userFound.save();
+    return { userFound };
+  } catch (error) {
+    throw error;
+  }
+};
+
+const updatePassword = async (req) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    if (!email || !otp || !newPassword) {
+      throw Object.assign(new Error(), {
+        name: "BAD_REQUEST",
+        message: "Requried Fields are not present",
+      });
+    }
+    const userFound = await userModel.findOne({ email });
+    if (!userFound) {
+      throw Object.assign(new Error(), {
+        name: "NOT_FOUND",
+        message: "User with this email doesn't exists",
+      });
+    }
+    if (userFound.otp === otp) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
+      userFound.password = hashedPassword;
+      await userFound.save();
+      return;
+    } else {
+      throw Object.assign(new Error(), {
+        name: "UNAUTHORIZED",
+        message: "Otp doesn't match",
+      });
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
+const passChangeRequest = async (req) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      throw Object.assign(new Error(), {
+        name: "BAD_REQUEST",
+        message: "Email is not present",
+      });
+    }
+    const userFound = await userModel.findOne({ email });
+    if (!userFound) {
+      throw Object.assign(new Error(), {
+        name: "NOT_FOUND",
+        message: "User with this email doesn't exists",
+      });
+    }
+    const randomNumber = Math.floor(100000 + Math.random() * 900000);
+    const otp = randomNumber.toString();
+    userFound.otp=otp;
+    await userFound.save();
+    sendMail(email, otp);
+    return ;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const userService = {
+  loginUser,
+  registerUser,
+  UdapteProfilePicUser,
+  deleteUser,
+  updateUser,
+  passChangeRequest,
+  updatePassword,
+};
+
+module.exports = userService;

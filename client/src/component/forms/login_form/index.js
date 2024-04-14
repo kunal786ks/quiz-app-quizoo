@@ -16,6 +16,7 @@ import { userLogin } from "../../../feature/user/actionCreator";
 import { useNavigate } from "react-router-dom";
 import RemoveRedEyeRoundedIcon from "@mui/icons-material/RemoveRedEyeRounded";
 import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
+import ForgotPassowrdModal from "../../modal/ForgotPassowrdModal";
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -161,6 +162,9 @@ const LoginForm = () => {
            { show?<VisibilityOffRoundedIcon htmlColor="gray" />:<RemoveRedEyeRoundedIcon htmlColor="gray" />}
           </InputRightElement>
         </InputGroup>
+        
+        <Text ml="auto" mr="15%" cursor="pointer" color="gray"><ForgotPassowrdModal>Forgot password?</ForgotPassowrdModal></Text>
+        
         <Button
           mt="2%"
           w="70%"

@@ -16,6 +16,13 @@ const userSchema=new mongoose.Schema({
     role:{
         type:Number,
         default:0
+    },
+    pic:{
+        type:String,
+        default:'/images/default.jpg'
+    },
+    otp:{
+        type:String,
     }
 },{timestamps:true})
 

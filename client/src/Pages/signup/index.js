@@ -7,7 +7,7 @@ const SignUp = () => {
     <Box h="100vh"  display="flex">
         <Box h="100vh" w="60%" padding="30px">
             <Box  h="100%" paddingTop="18px" paddingLeft="20px" paddingBottom="20px"> 
-                    <Box h="100%" display="flex" flexDir="column" gap="70px">
+                    <Box h="100%" display="flex" flexDir="column" gap="40px">
                             <Text color="rgb(0, 8, 55)" fontWeight="bold" fontSize="30px">📝 Quizoo</Text>
                             <Box h="100%" padding="40px">
                                 <SignUpForm/>
