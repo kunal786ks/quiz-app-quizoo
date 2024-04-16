@@ -17,6 +17,7 @@ const createTest = async (req) => {
       passingMarks,
       time_to_finish,
       instruction,
+      testCategory,
     } = req.body;
 
     if (MaximumMarks > 100) {
@@ -33,12 +34,13 @@ const createTest = async (req) => {
     }
     const alreadyExist = await TestModel.findOne({
       title,
+      testCategory: testCategory,
       owner: req.user._id,
     });
     if (alreadyExist) {
       throw Object.assign(new Error(), {
         name: "CONFLICT",
-        message: "Test already created",
+        message: "Test already created by this user",
       });
     }
 
@@ -48,7 +50,8 @@ const createTest = async (req) => {
       !instruction ||
       !totalQuestions ||
       !MaximumMarks ||
-      !passingMarks
+      !passingMarks ||
+      !testCategory
     ) {
       throw Object.assign(new Error(), {
         name: "BAD_REQUEST",
@@ -64,7 +67,7 @@ const createTest = async (req) => {
       totalQuestions,
       passingMarks,
       MaximumMarks,
-      remaingMarksQuestionsTobeAdded:MaximumMarks
+      remaingMarksQuestionsTobeAdded: MaximumMarks,
     });
 
     return { test };
@@ -73,8 +76,39 @@ const createTest = async (req) => {
   }
 };
 
+const getAllTestWithPageAndLimit = async (req) => {
+  try {
+    const { page, limit } = req.query;
+    if (!page || !limit) {
+      throw Object.assign(new Error(), {
+        name: "BAD_REQUEST",
+        message: "limit or page is not present",
+      });
+    }
+    const pageNumber = parseInt(page) || 1;
+    const pageSize = parseInt(limit);
+
+    const tests = await TestModel.find()
+      .populate("owner", "name email pic")
+      .sort({ createdAt: -1 })
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize);
+    const allTests = await TestModel.find();
+    const test = {
+      totalRecords: allTests.length,
+      page: page,
+      limit: limit,
+      records: tests,
+    };
+    return { test };
+  } catch (error) {
+    throw error;
+  }
+};
+
 const testService = {
   createTest,
+  getAllTestWithPageAndLimit,
 };
 
 module.exports = testService;

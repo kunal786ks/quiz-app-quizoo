@@ -5,6 +5,10 @@ const testSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    testCategory:{
+        type:String,
+        requried:true
+    },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

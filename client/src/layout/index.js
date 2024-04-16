@@ -4,10 +4,13 @@ import AppBar from "../component/AppBar";
 const LayoutComponent = () => {
   return (
     <Box h="100vh">
-      <AppBar/>
-      <main>
-          <Outlet /> 
+      <AppBar />
+      <Box pt="8vh">
+        <main>
+          <Outlet />
         </main>
+      </Box>
+
       {/* <p>this is footer</p> */}
     </Box>
   );

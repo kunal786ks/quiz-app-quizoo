@@ -8,6 +8,7 @@ import ProfilePage from "./Pages/profile";
 import PrivateRoutes from "./utils/ProtectedRoutes";
 import PageNotFound from "./component/PageNotFound";
 import UserInformation from "./Pages/userInfo";
+import CreateTest from "./Pages/CreateTest";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route element={<PrivateRoutes />}>
           <Route path="/home" element={<LayoutComponent />}>
             <Route path={"/home"} element={<HomePage />} />
+            <Route path={"/home/create-test"} element={<CreateTest/>}/>
             <Route path={"/home/profile"} element={<ProfilePage />}>
               <Route
                 path={"/home/profile/user-info"}

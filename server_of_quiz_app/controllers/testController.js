@@ -13,4 +13,16 @@ const createTestController=async(req,res)=>{
     }
 }
 
-module.exports={createTestController}
+
+const getTestWithLimitAndPage=async(req,res)=>{
+    try {
+        const response=await testService.getAllTestWithPageAndLimit(req);
+        return res.status(200).json({
+            message:"Success",
+            tests:response.test
+        })
+    } catch (error) {
+        errorHandler(res,error)
+    }
+}
+module.exports={createTestController,getTestWithLimitAndPage}
