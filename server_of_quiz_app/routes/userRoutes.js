@@ -1,9 +1,11 @@
 const express=require('express');
-const { userLoginController, userRegisterController,UdapteProfilePic,updatePassController, deleteUserController, updateUserController, passChangeRequestController } = require('../controllers/userController');
+const { userLoginController, userRegisterController,UdapteProfilePic,updatePassController, deleteUserController, updateUserController, passChangeRequestController, getUserByAdminController } = require('../controllers/userController');
 const {upload}=require('../config/multerService');
 const { protect } = require('../middleware/authMiddleware');
 
 const router=express.Router();
+
+router.get("/get-user-admin",protect,getUserByAdminController)
 
 router.post('/signup',userRegisterController)
 router.post('/login',userLoginController);

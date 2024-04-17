@@ -52,7 +52,7 @@ const TestViewCard = ({ test }) => {
         position="relative"
         marginTop="-100px">
         <Box display="flex" alignItems="center" gap="20px" >
-          <Avatar src={`${process.env.REACT_APP_API_HOST_KEY}${test?.owner.pic}`} size="lg" />
+          <Avatar src={`${process.env.REACT_APP_API_HOST_KEY}${test?.owner?.pic}`} size="lg" />
           <Box>
             <Text fontSize="20px" color="gray">{test?.owner?.name ? test.owner.name.charAt(0).toUpperCase() + test.owner.name.slice(1) : ""}</Text>
             <Text color="gray" font>{test?.owner?.email}</Text>

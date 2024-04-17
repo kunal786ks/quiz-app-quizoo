@@ -80,6 +80,19 @@ const updatePassController = async (req, res) => {
     errorHandler(res, error);
   }
 };
+
+
+const getUserByAdminController=async(req,res)=>{
+  try {
+    const response=await userService.getAllUsersByadmin(req);
+    return res.status(200).json({
+      message:'Success',
+      users:response.result
+    })    
+  } catch (error) {
+    errorHandler(res,error)
+  }
+}
 module.exports = {
   userRegisterController,
   userLoginController,
@@ -87,5 +100,6 @@ module.exports = {
   deleteUserController,
   updateUserController,
   updatePassController,
-  passChangeRequestController
+  passChangeRequestController,
+  getUserByAdminController
 };

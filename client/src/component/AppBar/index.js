@@ -91,6 +91,7 @@ const AppBar = () => {
             <MenuItem onClick={handleCreateTest}>Create Test</MenuItem>
           )}
           {user.role === 1 && <MenuItem>See Previous Test</MenuItem>}
+          {user.role === 1 && <MenuItem onClick={()=>{navigate("/home/admin")}}>Admin Dasboard</MenuItem>}
           <MenuItem onClick={handleLogout}>Logout</MenuItem>
         </MenuList>
       </Menu>

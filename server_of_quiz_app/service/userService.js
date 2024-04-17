@@ -211,6 +211,54 @@ const passChangeRequest = async (req) => {
   }
 };
 
+const getAllUsersByadmin = async (req) => {
+  try {
+    const { page, limit, search } = req.query;
+    const loggedInUserId = req.user._id;
+    let query = {};
+
+    const currentUser = await userModel.findById(loggedInUserId);
+    if (currentUser.role !== 1) {
+      throw Object.assign(new Error(), { name: "UNAUTHORIZED", message: "Only Admin can access this" });
+    }
+
+    if (loggedInUserId) {
+      query._id = { $ne: loggedInUserId };
+    }
+
+    if (search) {
+      const regex = new RegExp(search, 'i');
+      query.email = { $regex: regex };
+    }
+
+    const pageNumber = parseInt(page) || 1;
+    const pageSize = parseInt(limit);
+
+    const users = await userModel.find(query, 'name email role') 
+      .sort({ createdAt: -1 })
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize);
+
+    const totalRecords = search ? users.length : await userModel.countDocuments(query);
+
+    const totalPages = Math.ceil(totalRecords / pageSize);
+
+    const result = {
+      totalRecords: totalRecords,
+      totalPages: totalPages,
+      page: page,
+      limit: limit,
+      records: users,
+    };
+
+    return { result };
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+
 const userService = {
   loginUser,
   registerUser,
@@ -219,6 +267,7 @@ const userService = {
   updateUser,
   passChangeRequest,
   updatePassword,
+  getAllUsersByadmin
 };
 
 module.exports = userService;

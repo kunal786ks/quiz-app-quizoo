@@ -1,0 +1,19 @@
+.user-table-container {
+    width: 100%;
+  }
+  
+  .user-table {
+    width: 100%;
+    border-collapse: collapse; /* Collapse border spacing */
+  }
+  
+  .user-table th,
+  .user-table td {
+    padding: 8px;
+    border: 1px solid #ddd; /* Add border around cells */
+  }
+  
+  .user-table th {
+    background-color: #f2f2f2; /* Light gray background for header */
+  }
+  
