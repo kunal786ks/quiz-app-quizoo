@@ -67,6 +67,7 @@ const createTest = async (req) => {
       totalQuestions,
       passingMarks,
       MaximumMarks,
+      testCategory,
       remaingMarksQuestionsTobeAdded: MaximumMarks,
     });
 
@@ -89,7 +90,7 @@ const getAllTestWithPageAndLimit = async (req) => {
     const pageSize = parseInt(limit);
 
     const tests = await TestModel.find()
-      .populate("owner", "name email pic")
+      .populate( "owner","name email pic" )
       .sort({ createdAt: -1 })
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize);

@@ -1,13 +1,12 @@
-import { Box } from "@chakra-ui/react";
+import { Box, CircularProgress, Text } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useSelector } from "react-redux";
+import TestViewCard from "../../molecules/TestView";
 
 const HomePageCard = () => {
   const [test, setTest] = useState([]);
-  // const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [totalTest, setTotalTest] = useState(null);
   const token = useSelector((state) => state.user?.token);
@@ -25,24 +24,31 @@ const HomePageCard = () => {
       setTest([...test, ...response.data.tests.records]);
       setPage(page + 1);
       setTotalTest(response.data.tests.totalRecords); // Set total results from response
-    } catch (error) {}
+    } catch (error) { }
   };
+  console.log(test)
   useEffect(() => {
     fetchData();
   }, []);
   return (
-    <Box height="100vh"> 
+    <Box className="demo-text" height="100vh">
       <InfiniteScroll
+       style={{
+        overflowY:"hidden"
+       }}
         dataLength={test.length}
         next={fetchData}
-        hasMore={test.length !== totalTest} // Check if items.length is not equal to results
-        loader={<p>Loading.. eej.</p>}
-        endMessage={<p>No more data to load.</p>}
+        hasMore={test.length !== totalTest}
+        loader={<Box w="100%" alignItems="center" justifyContent="center" display="flex" padding="20px"><CircularProgress isIndeterminate color="blue"/></Box>}
+        endMessage={<Box w="100%" alignItems="center" justifyContent="center" display="flex" padding="20px"><Text color="gray" fontSize="20px">
+          .... No more Data ....</Text></Box>}
       >
-        <Box bg="red">
+        <Box display="flex" alignItems="center" w="100%" justifyContent="center" >
           <ol>
             {test.map((item, index) => (
-              <li key={index}>{item.title}</li>
+              <Box key={index} w="100%" padding="20px" >
+                <TestViewCard test={item} />
+              </Box>
             ))}
           </ol>
         </Box>

@@ -18,7 +18,7 @@ const testSlice=createSlice({
     extraReducers:(builder)=>{
         builder
             .addCase(addTest.pending,(state)=>{
-                state.loading=true
+                state.loading=true;
             })
             .addCase(addTest.fulfilled,(state,{payload})=>{
                 console.log(payload);

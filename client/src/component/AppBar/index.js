@@ -36,6 +36,7 @@ const AppBar = () => {
       right="0"
       bg="white"
       display="flex"
+      zIndex="1000"
       justifyContent="space-between"
       alignItems="center"
       h="8vh"
