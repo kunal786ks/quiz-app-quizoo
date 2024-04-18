@@ -11,8 +11,8 @@ const AdminMenu = () => {
       path: "/home/admin/all-users",
     },
     {
-        label: "Website Users",
-        path: "/home/admin/all-users",
+        label: "All Tests",
+        path: "/home/admin/all-test",
       },
   ];
   const handleClick = (path, index) => {

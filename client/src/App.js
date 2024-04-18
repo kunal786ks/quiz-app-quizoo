@@ -12,6 +12,7 @@ import CreateTest from "./Pages/CreateTest";
 import ViewTest from "./Pages/ViewTest";
 import AdminPage from "./Pages/AdminPage";
 import UserAll from "./Pages/AdminPage/admin-subpages/UserAll";
+import AllTests from "./Pages/AdminPage/see-tests";
 
 function App() {
   return (
@@ -23,19 +24,19 @@ function App() {
         <Route element={<PrivateRoutes />}>
           <Route path="/home" element={<LayoutComponent />}>
             <Route path={"/home"} element={<HomePage />} />
-            <Route path={"/home/admin"} element={<AdminPage/>}>
-              <Route path={"/home/admin/all-users"} element={<UserAll/>}/>
+            <Route path={"/home/admin"} element={<AdminPage />}>
+              <Route path={"/home/admin/all-users"} element={<UserAll />} />
+              <Route path={"/home/admin/all-test"} element={<AllTests />} />
             </Route>
-            <Route path={"/home/create-test"} element={<CreateTest/>}/>
-        <Route path={"/home/view-test/:testId"} element={<ViewTest/>}/>
-            
-            
+            <Route path={"/home/create-test"} element={<CreateTest />} />
+            <Route path={"/home/view-test/:testId"} element={<ViewTest />} />
+
             <Route path={"/home/profile"} element={<ProfilePage />}>
               <Route
                 path={"/home/profile/user-info"}
                 element={<UserInformation />}
               />
-               <Route
+              <Route
                 path={"/home/profile/other"}
                 element={<UserInformation />}
               />

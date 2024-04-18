@@ -239,7 +239,7 @@ const getAllUsersByadmin = async (req) => {
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize);
 
-    const totalRecords = search ? users.length : await userModel.countDocuments(query);
+    const totalRecords = await userModel.countDocuments(query);
 
     const totalPages = Math.ceil(totalRecords / pageSize);
 

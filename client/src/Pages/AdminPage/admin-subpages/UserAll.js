@@ -73,7 +73,7 @@ const UserAll = () => {
 
   return (
     <Box h="92vh" display="flex" justifyContent="center">
-      <Box padding="30px" mt="5%" className="user-table-container">
+      <Box padding="30px" className="user-table-container">
         <Box mb="1%" display="flex" alignItems="center" gap="20px">
           <InputGroup width="40%" size="lg" borderRadius="12px">
             <InputLeftElement pointerEvents="none">

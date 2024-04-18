@@ -124,7 +124,7 @@ const SignUpForm = () => {
           color="rgb(20, 25, 58)"
           fontWeight="bold"
         >
-          Your Name
+          Name
         </Text>
         <InputGroup
           size="lg"

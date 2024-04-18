@@ -79,24 +79,29 @@ const createTest = async (req) => {
 
 const getAllTestWithPageAndLimit = async (req) => {
   try {
-    const { page, limit } = req.query;
-    if (!page || !limit) {
-      throw Object.assign(new Error(), {
-        name: "BAD_REQUEST",
-        message: "limit or page is not present",
-      });
+    const { page, limit, search, sortOrder } = req.query;
+    let query = {};
+    if (search) {
+      const regex = new RegExp(search, "i");
+      query.title = { $regex: regex };
     }
     const pageNumber = parseInt(page) || 1;
     const pageSize = parseInt(limit);
 
-    const tests = await TestModel.find()
-      .populate( "owner","name email pic" )
-      .sort({ createdAt: -1 })
+    const sortDirection =
+      sortOrder && sortOrder.toLowerCase() === "asc" ? 1 : -1;
+
+    const tests = await TestModel.find(query)
+      .populate("owner", "name email pic")
+      .sort({ createdAt: sortDirection })
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize);
-    const allTests = await TestModel.find();
+    
+    const totalRecords = await TestModel.countDocuments(query);
+    const totalPages = Math.ceil(totalRecords / pageSize);
     const test = {
-      totalRecords: allTests.length,
+      totalRecords: totalRecords,
+      totalPages: totalPages,
       page: page,
       limit: limit,
       records: tests,
