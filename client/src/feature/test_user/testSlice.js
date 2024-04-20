@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { addTest } from "./actionCreator";
 
 const initialState = {
-  users_Test: [],
+  test_id:"",
   loading: false,
 };
 
@@ -13,6 +13,10 @@ const testSlice=createSlice({
     reducers:{
         clearTest:(state,{payload})=>{
 
+        },
+        viewTest:(state,{payload})=>{
+            console.log(payload);
+            state.test_id=payload
         }
     },
     extraReducers:(builder)=>{
@@ -22,6 +26,7 @@ const testSlice=createSlice({
             })
             .addCase(addTest.fulfilled,(state,{payload})=>{
                 console.log(payload);
+                state.test_id=payload?.test?._id
                 state.loading=false;
             })
             .addCase(addTest.rejected,(state,{payload})=>{
@@ -30,6 +35,6 @@ const testSlice=createSlice({
     }
 })
 
-export const { clearTest } = testSlice.actions;
+export const { clearTest,viewTest } = testSlice.actions;
 
 export default testSlice.reducer;

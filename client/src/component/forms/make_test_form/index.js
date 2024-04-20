@@ -23,6 +23,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import CloseIcon from "@mui/icons-material/Close";
 import { useDispatch, useSelector } from "react-redux";
 import { addTest } from "../../../feature/test_user/actionCreator";
+import { useNavigate } from "react-router-dom";
 
 const MakeTestForm = () => {
   const [title, setTitle] = useState("");
@@ -31,15 +32,16 @@ const MakeTestForm = () => {
   const [time_to_finish, setTimeToFinish] = useState("");
   const [instruction, setInstruction] = useState("");
   const [instArray, setinstArray] = useState([]);
-  const [questions, setQuestions] = useState();
+  const [testDescription, setTestDescription] = useState();
   const [passingMarks, setPassingMakrs] = useState();
   const [maxMarks, setMaxMarks] = useState();
 
   const dispach = useDispatch();
   const toast = useToast();
+  const navigate = useNavigate();
 
   const token = useSelector((state) => state.user?.token);
-  const loading=useSelector((state)=>state?.test?.loading)
+  const loading = useSelector((state) => state?.test?.loading);
   const handleAddToArray = () => {
     if (instruction.trim() !== "") {
       setinstArray([...instArray, instruction.trim()]);
@@ -58,7 +60,7 @@ const MakeTestForm = () => {
       !testCategory ||
       !time_to_finish ||
       instArray.length === 0 ||
-      !questions ||
+      !testDescription ||
       !passingMarks ||
       !maxMarks
     ) {
@@ -76,10 +78,10 @@ const MakeTestForm = () => {
       const res = await dispach(
         addTest({
           title: title,
-          time_to_finish: time_to_finish,
+          time_to_finish: parseInt(time_to_finish, 10),
           testCategory: testCategory,
           instruction: instArray,
-          totalQuestions: parseInt(questions, 10),
+          testDescription: testDescription,
           passingMarks: parseInt(passingMarks, 10),
           MaximumMarks: parseInt(maxMarks, 10),
           token,
@@ -94,6 +96,7 @@ const MakeTestForm = () => {
           position: "top-left",
           isClosable: true,
         });
+        navigate("/home/add-ques");
       } else if (res.meta.requestStatus === "rejected") {
         toast({
           title: "Error",
@@ -137,6 +140,7 @@ const MakeTestForm = () => {
       <FormControl isRequired mt="2%">
         <FormLabel>Time to finish (in minutes)</FormLabel>
         <Input
+          type="number"
           placeholder="Enter the total time of test "
           value={time_to_finish}
           onChange={(e) => setTimeToFinish(e.target.value)}
@@ -191,17 +195,18 @@ const MakeTestForm = () => {
       </FormControl>
 
       <FormControl isRequired mt="2%">
-        <FormLabel>Total Questions</FormLabel>
+        <FormLabel>Test Description</FormLabel>
         <Input
           placeholder="Enter the total Questions of test "
-          value={questions}
-          onChange={(e) => setQuestions(e.target.value)}
+          value={testDescription}
+          onChange={(e) => setTestDescription(e.target.value)}
         />
       </FormControl>
 
       <FormControl isRequired mt="2%">
         <FormLabel>Maximum Marks</FormLabel>
         <Input
+          type="number"
           placeholder="Enter the total Questions of test "
           value={maxMarks}
           onChange={(e) => setMaxMarks(e.target.value)}
@@ -211,6 +216,7 @@ const MakeTestForm = () => {
       <FormControl isRequired mt="2%">
         <FormLabel>Passing Marks</FormLabel>
         <Input
+          type="number"
           placeholder="Enter the total Questions of test "
           value={passingMarks}
           onChange={(e) => setPassingMakrs(e.target.value)}

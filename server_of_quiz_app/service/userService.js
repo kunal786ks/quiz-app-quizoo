@@ -218,7 +218,7 @@ const getAllUsersByadmin = async (req) => {
     let query = {};
 
     const currentUser = await userModel.findById(loggedInUserId);
-    if (currentUser.role !== 1) {
+    if (currentUser.role !== 2) {
       throw Object.assign(new Error(), { name: "UNAUTHORIZED", message: "Only Admin can access this" });
     }
 

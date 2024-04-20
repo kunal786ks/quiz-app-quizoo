@@ -4,13 +4,14 @@ const reportModel = require("../model/userReportModel");
 
 const createQuestions = async (req) => {
   try {
-    const user = req.user;
-    if (user.role !== 1) {
+    const userLoggedIn = req.user;
+    if (userLoggedIn.role !== 2 && userLoggedIn.role !== 1) {
       throw Object.assign(new Error(), {
         name: "UNAUTHORIZED",
-        message: "You arenot allowed for this action",
+        message: "You are not allowed for this action",
       });
     }
+    
     const {
       question_title,
       questionChoices,
@@ -34,8 +35,11 @@ const createQuestions = async (req) => {
     if(!testFound){
         throw Object.assign(new Error(),{name:"NOT_FOUND",message:"Test is not present"})
     }
-    if(testFound.totalQuestions<=0){
-        throw Object.assign(new Error(),{name:"UNAUTHORIZED",message:"This Test has reached the max questions limit"})
+    if ((userLoggedIn._id.toString() !== testFound.owner.toString()) && userLoggedIn.role!==2) {
+      throw Object.assign(new Error(), {
+        name: "UNAUTHORIZED",
+        message: "You are not owner of this test",
+      });
     }
     if(marksOfQuestions>testFound.MaximumMarks || marksOfQuestions>testFound.remaingMarksQuestionsTobeAdded || testFound.remaingMarksQuestionsTobeAdded===0){
         throw Object.assign(new Error(),{name:"UNAUTHORIZED",message:"This question exceed the limit of the questions' marks"})
@@ -48,7 +52,6 @@ const createQuestions = async (req) => {
       testId,
       marksOfQuestions,
     });
-    testFound.totalQuestions-=1;
     testFound.remaingMarksQuestionsTobeAdded-=marksOfQuestions;
     await testFound.save();
     return { question };

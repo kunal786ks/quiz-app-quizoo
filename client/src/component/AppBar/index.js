@@ -70,7 +70,6 @@ const AppBar = () => {
       setTest(response.data.tests.records);
     } catch (error) {}
   };
-  console.log(test);
   return (
     <Box
       position="fixed"
@@ -98,7 +97,7 @@ const AppBar = () => {
       >
         📝 Quizoo
       </Text>
-      {location.pathname === "/home" && (
+      {location?.pathname === "/home" && (
         <Box width="30%" display="flex" gap="10px">
           <Popover h="20vh" overflowY="scroll">
             <InputGroup borderColor="rgb(132, 94, 242)">
@@ -163,7 +162,7 @@ const AppBar = () => {
                 {test?.length > 0
                   ? test?.map((test, index) => (
                       <Text key={index} h="100px">
-                        {test.title}
+                        {test?.title}
                       </Text>
                     ))
                   : "No Data Found"}
@@ -176,8 +175,8 @@ const AppBar = () => {
       <Menu>
         <Avatar
           as={MenuButton}
-          name={user.name}
-          src={`${process.env.REACT_APP_API_HOST_KEY}${user.pic}`}
+          name={user?.name}
+          src={`${process.env.REACT_APP_API_HOST_KEY}${user?.pic}`}
         />
         <MenuList>
           <MenuItem
@@ -187,11 +186,11 @@ const AppBar = () => {
           >
             Your Profile
           </MenuItem>
-          {user.role === 1 && (
+          {(user?.role === 1 || user?.role===2) && (
             <MenuItem onClick={handleCreateTest}>Create Test</MenuItem>
           )}
-          {user.role === 1 && <MenuItem>See Previous Test</MenuItem>}
-          {user.role === 1 && (
+          {(user?.role === 1 || user?.role===2) && <MenuItem onClick={()=>{navigate("/home/all-tests")}}>See Previous Test</MenuItem>}
+          {(user?.role===2) && (
             <MenuItem
               onClick={() => {
                 navigate("/home/admin");

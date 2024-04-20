@@ -10,15 +10,15 @@ import {
   Text,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import CreateTestModal from "../../../component/modal/CreateTestModal";
 import SearchIcon from "@mui/icons-material/Search";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import TestCard from "../../../component/Card/test_card";
 import EastIcon from "@mui/icons-material/East";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import TestCard from "../../component/Card/test_card";
+import CreateTestModal from "../../component/modal/CreateTestModal";
 
-const AllTests = () => {
+const TeacherTests = () => {
   const [order, setOrder] = useState("asc");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState("");
@@ -31,7 +31,7 @@ const AllTests = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8084/api/test/get-test?page=${page}&limit=8&search=${search}&sortOrder=${order}&status=${status}`,
+        `http://localhost:8084/api/test/user-test?page=${page}&limit=8&search=${search}&sortOrder=${order}&status=${status}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -43,7 +43,6 @@ const AllTests = () => {
       setTotalTest(response.data.tests.totalRecords); // Set total results from response
     } catch (error) {}
   };
-
   useEffect(() => {
     fetchData();
   }, [order, page,status]);
@@ -56,6 +55,7 @@ const AllTests = () => {
 
     return () => clearTimeout(delayDebounceFn);
   }, [search]);
+  console.log(status)
   const handleBackPage = () => {
     if (page === 1) {
       return;
@@ -68,7 +68,7 @@ const AllTests = () => {
     }
     setPage(page + 1);
   };
-  console.log(test)
+
   return (
     <Box h="92vh" padding="30px">
       <Box display="flex" gap="20px">
@@ -154,4 +154,4 @@ const AllTests = () => {
   );
 };
 
-export default AllTests;
+export default TeacherTests;

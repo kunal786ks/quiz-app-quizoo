@@ -9,9 +9,9 @@ let error = {
 
 export const addTest = createAsyncThunk(
   ACTION_TYPE.create_test,
-  async ({title,time_to_finish,testCategory,instruction,totalQuestions,passingMarks,MaximumMarks,token}, thunkApi) => {
+  async ({title,time_to_finish,testCategory,instruction,testDescription,passingMarks,MaximumMarks,token}, thunkApi) => {
     try {
-        const response=await createTestApi({title,time_to_finish,testCategory,instruction,totalQuestions,passingMarks,MaximumMarks,token})
+        const response=await createTestApi({title,time_to_finish,testCategory,instruction,testDescription,passingMarks,MaximumMarks,token})
         return response.data
     } catch (err) {
       if (err.response) {

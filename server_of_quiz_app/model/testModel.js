@@ -14,8 +14,8 @@ const testSchema = new mongoose.Schema({
         ref: 'User',
         required:true
     },
-    totalQuestions:{
-        type:Number,
+    testDescription:{
+        type:String,
         required:true
     },
     MaximumMarks:{
@@ -27,7 +27,7 @@ const testSchema = new mongoose.Schema({
         required:true
     },
     time_to_finish: {
-        type: String,
+        type: Number,
         required: true
     },
     remaingMarksQuestionsTobeAdded:{

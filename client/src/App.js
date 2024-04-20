@@ -13,8 +13,14 @@ import ViewTest from "./Pages/ViewTest";
 import AdminPage from "./Pages/AdminPage";
 import UserAll from "./Pages/AdminPage/admin-subpages/UserAll";
 import AllTests from "./Pages/AdminPage/see-tests";
+import AddQues from "./Pages/AddquesPage";
+import { useSelector } from "react-redux";
+import TeacherTests from "./Pages/TeacherTest";
 
 function App() {
+
+  const testId=useSelector(state=>state?.test?.test_id)
+  
   return (
     <div className="App">
       <Routes>
@@ -24,11 +30,13 @@ function App() {
         <Route element={<PrivateRoutes />}>
           <Route path="/home" element={<LayoutComponent />}>
             <Route path={"/home"} element={<HomePage />} />
+            <Route path={"/home/all-tests"} element={<TeacherTests/>}/>
             <Route path={"/home/admin"} element={<AdminPage />}>
               <Route path={"/home/admin/all-users"} element={<UserAll />} />
               <Route path={"/home/admin/all-test"} element={<AllTests />} />
             </Route>
             <Route path={"/home/create-test"} element={<CreateTest />} />
+            {testId && <Route path={"/home/add-ques"} element={<AddQues/>}/>}
             <Route path={"/home/view-test/:testId"} element={<ViewTest />} />
 
             <Route path={"/home/profile"} element={<ProfilePage />}>
