@@ -104,8 +104,8 @@ const answerQuestion = async (req) => {
     questionAndAnsByuser.forEach((userAns) => {
       const correctAnswer = correctAnswersMap[userAns.quesId];
       if (
-        correctAnswer.correctAnswer &&
-        correctAnswer.correctAnswer === userAns.ansMarked
+        correctAnswer?.correctAnswer &&
+        correctAnswer?.correctAnswer === userAns.ansMarked
       ) {
         totalCorrectQuestions += 1;
         scoreEarned += correctAnswer.marksOfQuestions;
@@ -126,7 +126,26 @@ const answerQuestion = async (req) => {
     if (scoreEarned >= testFound.passingMarks) {
       passStatus = true;
     }
-    const userReport = await reportModel.create({
+
+    const reportFound=await reportModel.findOne({userId:req.user._id,testId:testId})
+    console.log(reportFound)
+    if(!reportFound){
+      await reportModel.create({
+        userId: req.user._id,
+        testId,
+        totalQuestions: questions.length,
+        maximumMarks: totalScore,
+        correctQuestions: totalCorrectQuestions,
+        score: scoreEarned,
+        notAttempted: questions.length - questionAndAnsByuser.length,
+        wrongAns: incorrectAns,
+        passStatus,
+        userExam: questionAndAnsByuser,
+      });
+    }
+    console.log("hello")
+
+    await reportModel.findByIdAndUpdate(reportFound?._id,{
       userId: req.user._id,
       testId,
       totalQuestions: questions.length,
@@ -137,7 +156,8 @@ const answerQuestion = async (req) => {
       wrongAns: incorrectAns,
       passStatus,
       userExam: questionAndAnsByuser,
-    });
+    },{new:true})
+    
     return { userData };
   } catch (error) {
     throw error;
@@ -146,7 +166,7 @@ const answerQuestion = async (req) => {
 
 const getQuestionOfTest = async (req) => {
   try {
-    const { testId } = req.body;
+    const testId = req.params.testId;
     const user = req.user;
     if (!testId) {
       throw Object.assign(new Error(), {
@@ -166,6 +186,16 @@ const getQuestionOfTest = async (req) => {
 
       return { question };
     } else {
+      const testFound = await TestModel.findById(testId);
+      if (
+        testFound.owner.toString() !== req.user._id.toString() &&
+        user.role == 1
+      ) {
+        throw Object.assign(new Error(), {
+          name: "UNAUTHORIZED",
+          message: "You are not owner for this action",
+        });
+      }
       const questions = await questionModel.find({ testId: testId });
       const question = {
         totalQuestion: questions.length,
@@ -211,11 +241,53 @@ const editQuestion = async (req) => {
     }
     if (user.role === 1) {
       const testFound = await TestModel.findById(testId);
+
       if (testFound.owner.toString() !== req.user._id.toString()) {
         throw Object.assign(new Error(), {
           name: "UNAUTHORIZED",
           message: "You are not owner of test",
         });
+      }
+      const questionFound = await questionModel.findById(questionId);
+      if (
+        testFound.remaingMarksQuestionsTobeAdded === 0 &&
+        questionFound.marksOfQuestions < marksOfQuestions
+      ) {
+        throw Object.assign(new Error(), {
+          name: "CONFLICT",
+          message: "This exceed the limit of marks,refresh again",
+        });
+      } else if (
+        testFound.remaingMarksQuestionsTobeAdded === 0 &&
+        questionFound.marksOfQuestions >= marksOfQuestions
+      ) {
+        testFound.remaingMarksQuestionsTobeAdded =
+          testFound.MaximumMarks -
+          (testFound.MaximumMarks -
+            questionFound.marksOfQuestions +
+            marksOfQuestions);
+        await testFound.save();
+      } else if (
+        testFound.remaingMarksQuestionsTobeAdded !== 0 &&
+        questionFound.marksOfQuestions >= marksOfQuestions
+      ) {
+        testFound.remaingMarksQuestionsTobeAdded +=
+          questionFound.marksOfQuestions - marksOfQuestions;
+        await testFound.save();
+      } else if (
+        questionFound.marksOfQuestions < marksOfQuestions &&
+        testFound.remaingMarksQuestionsTobeAdded !== 0
+      ) {
+        testFound.remaingMarksQuestionsTobeAdded -=
+          marksOfQuestions - questionFound.marksOfQuestions;
+        if (testFound.remaingMarksQuestionsTobeAdded < 0) {
+          throw Object.assign(new Error(), {
+            name: "CONFLICT",
+            message: "This exceed the limit of marks",
+          });
+        } else {
+          await testFound.save();
+        }
       }
       await questionModel.findByIdAndUpdate(questionId, {
         question_title,
@@ -227,6 +299,49 @@ const editQuestion = async (req) => {
 
       return;
     } else if (user.role === 2) {
+      const testFound = await TestModel.findById(testId);
+      const questionFound = await questionModel.findById(questionId);
+      if (
+        testFound.remaingMarksQuestionsTobeAdded === 0 &&
+        questionFound.marksOfQuestions < marksOfQuestions
+      ) {
+        throw Object.assign(new Error(), {
+          name: "CONFLICT",
+          message: "This is not valid",
+        });
+      } else if (
+        testFound.remaingMarksQuestionsTobeAdded === 0 &&
+        questionFound.marksOfQuestions >= marksOfQuestions
+      ) {
+        testFound.remaingMarksQuestionsTobeAdded =
+          testFound.MaximumMarks -
+          (testFound.MaximumMarks -
+            questionFound.marksOfQuestions +
+            marksOfQuestions);
+        await testFound.save();
+      } else if (
+        testFound.remaingMarksQuestionsTobeAdded !== 0 &&
+        questionFound.marksOfQuestions >= marksOfQuestions
+      ) {
+        testFound.remaingMarksQuestionsTobeAdded +=
+          questionFound.marksOfQuestions - marksOfQuestions;
+        await testFound.save();
+      } else if (
+        questionFound.marksOfQuestions < marksOfQuestions &&
+        testFound.remaingMarksQuestionsTobeAdded !== 0
+      ) {
+        testFound.remaingMarksQuestionsTobeAdded -=
+          marksOfQuestions - questionFound.marksOfQuestions;
+        if (testFound.remaingMarksQuestionsTobeAdded < 0) {
+          throw Object.assign(new Error(), {
+            name: "CONFLICT",
+            message: "This exceed the limit of marks",
+          });
+        } else {
+          await testFound.save();
+        }
+      }
+
       await questionModel.findByIdAndUpdate(questionId, {
         question_title,
         questionChoices,
@@ -284,12 +399,37 @@ const deleteQuestion = async (req) => {
   }
 };
 
+const getQuestionForTest = async (req) => {
+  try {
+    const testId = req.params.testId;
+    const user = req.user;
+    if (!testId) {
+      throw Object.assign(new Error(), {
+        name: "BAD_REQUEST",
+        message: "Bad action",
+      });
+    }
+    const questions = await questionModel.find(
+      { testId: testId },
+      { correctAnswer: 0 }
+    );
+    const question = {
+      totalQuestion: questions.length,
+      questions: questions,
+    };
+
+    return { question };
+  } catch (error) {
+    throw error;
+  }
+};
 const questionService = {
   createQuestions,
   answerQuestion,
   getQuestionOfTest,
   editQuestion,
-  deleteQuestion
+  deleteQuestion,
+  getQuestionForTest
 };
 
 module.exports = questionService;

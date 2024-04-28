@@ -58,10 +58,23 @@ const deleteQuestionController=async(req,res)=>{
         errorHandler(res,error)
     }
 }
+
+const getQuestionForTestController=async(req,res)=>{
+  try {
+    const response=await questionService.getQuestionForTest(req);
+    return res.status(200).json({
+      message:"Success",
+      questions:response.question
+    })
+  } catch (error) {
+    errorHandler(res,error)
+  }
+}
 module.exports = {
   createQuesController,
   giveAnsController,
   getQuestionController,
   editQuestionController,
-  deleteQuestionController
+  deleteQuestionController,
+  getQuestionForTestController
 };

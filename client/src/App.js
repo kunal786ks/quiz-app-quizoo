@@ -16,6 +16,9 @@ import AllTests from "./Pages/AdminPage/see-tests";
 import AddQues from "./Pages/AddquesPage";
 import { useSelector } from "react-redux";
 import TeacherTests from "./Pages/TeacherTest";
+import ViewQuestions from "./Pages/ViewQuestions";
+import TakeTest from "./Pages/TakeTest";
+import TestAnalytics from "./Pages/TestAnalytics";
 
 function App() {
 
@@ -37,6 +40,9 @@ function App() {
             </Route>
             <Route path={"/home/create-test"} element={<CreateTest />} />
             {testId && <Route path={"/home/add-ques"} element={<AddQues/>}/>}
+            {testId && <Route path={"/home/view-ques"} element={<ViewQuestions/>}/>}
+            {testId && <Route path={"/home/take-test"} element={<TakeTest/>}/>}
+            {testId && <Route path={"/home/test/analytics"} element={<TestAnalytics/>}/>}
             <Route path={"/home/view-test/:testId"} element={<ViewTest />} />
 
             <Route path={"/home/profile"} element={<ProfilePage />}>

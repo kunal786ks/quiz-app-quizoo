@@ -46,7 +46,7 @@ import { useState } from "react";
           toast({
             title: "Error",
             description: error?.response?.data?.message,
-            status: "Error",
+            status: "error",
             duration: 4000,
             position: "top-left",
             isClosable: true,

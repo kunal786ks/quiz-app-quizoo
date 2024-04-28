@@ -5,11 +5,14 @@ import {
   FormLabel,
   Input,
   Text,
+  Tooltip,
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import InfoIcon from "@mui/icons-material/Info";
+import { useNavigate } from "react-router-dom";
 
 const AddQues = () => {
   const [test, setTest] = useState();
@@ -21,11 +24,12 @@ const AddQues = () => {
   const [option4, setOption4] = useState("");
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [marks, setMarks] = useState("");
-  const [updated,setUpdated]=useState(false);
+  const [updated, setUpdated] = useState(false);
 
   const testId = useSelector((state) => state?.test?.test_id);
   const token = useSelector((state) => state?.user?.token);
   const toast = useToast();
+  const navigate=useNavigate();
 
   const fetchTestData = async () => {
     try {
@@ -49,35 +53,47 @@ const AddQues = () => {
 
   useEffect(() => {
     fetchTestData();
-  }, [testId,updated]);
+  }, [testId, updated]);
 
-
-  const handleQuestion=async()=>{
-    if(!title || !option1 || !option2 || !option3 || !option4 || !correctAnswer){
+  const handleQuestion = async () => {
+    if (
+      !title ||
+      !option1 ||
+      !option2 ||
+      !option3 ||
+      !option4 ||
+      !correctAnswer||
+      !marks||
+      parseInt(marks)<=0
+    ) {
       toast({
         title: "Error",
-        description: "All the required field are ont present",
+        description: "Check again your fields",
         status: "error",
         duration: 5000,
         position: "top-left",
         isClosable: true,
       });
-      return
+      return;
     }
     try {
-      const res=await axios.post(`http://localhost:8084/api/ques/add-ques`,{
-        question_title:title,
-        questionChoices:[option1,option2,option3,option4],
-        correctAnswer:correctAnswer,
-        testId:testId,
-        marksOfQuestions:parseInt(marks,10)
-      },{
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const res = await axios.post(
+        `http://localhost:8084/api/ques/add-ques`,
+        {
+          question_title: title,
+          questionChoices: [option1, option2, option3, option4],
+          correctAnswer: correctAnswer,
+          testId: testId,
+          marksOfQuestions: parseInt(marks, 10),
         },
-      })
-      console.log(res)
-      setUpdated(!updated)
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(res);
+      setUpdated(!updated);
       toast({
         title: "Success",
         description: "Question added successfully to test",
@@ -87,7 +103,7 @@ const AddQues = () => {
         isClosable: true,
       });
     } catch (error) {
-      console.log(error,"tid")
+      console.log(error, "tid");
       toast({
         title: "Error",
         description: error.response?.data?.message,
@@ -97,25 +113,43 @@ const AddQues = () => {
         isClosable: true,
       });
     }
+  };
+
+  const handleViewQuestions=()=>{
+    navigate('/home/view-ques')
   }
   return (
     <Box h="92vh" w="100%" padding="20px" display="flex" gap="20px">
       <Box h="100%" bg="lightgray" w="40%" borderRadius="12px" padding="20px">
-        <Text w="100%" display="flex" justifyContent="center" fontSize="25px" fontWeight="bold" textDecoration="underline">Add Questions to Your Test  </Text>
-        <Box display="flex" mt="2%"justifyContent="space-between">
-          <Text fontSize="25px" >
+        <Box display="flex">
+          <Text
+            w="100%"
+            display="flex"
+            justifyContent="center"
+            fontSize="25px"
+            fontWeight="bold"
+            textDecoration="underline"
+          >
+            Add Questions to Your Test{" "}
+          </Text>
+          <Text cursor="pointer" onClick={handleViewQuestions}>
+            <Tooltip label="View Test Question">
+              <InfoIcon />
+            </Tooltip>
+          </Text>
+        </Box>
+        <Box display="flex" mt="2%" justifyContent="space-between">
+          <Text fontSize="25px">
             Test Title :{" "}
             {test?.title &&
               test?.title.charAt(0).toUpperCase() + test?.title.slice(1)}
           </Text>
-          <Text fontSize="25px" >
-            Max. Marks: {test?.MaximumMarks}
-          </Text>
+          <Text fontSize="25px">Max. Marks: {test?.MaximumMarks}</Text>
         </Box>
-        <Box h="10%"  overflow="hidden" mt="2%">
-              <Text fontSize="20px">Description: {test?.testDescription}</Text>
+        <Box h="10%" overflow="hidden" mt="2%">
+          <Text fontSize="20px">Description: {test?.testDescription}</Text>
         </Box>
-        <Text mt="1%" fontSize="25px" >
+        <Text mt="1%" fontSize="25px">
           Test Instruction (Read Carefully all the instructions)
         </Text>
         <Box mt="1%" h="40%" overflow="hidden">
@@ -133,15 +167,9 @@ const AddQues = () => {
           ))}
         </Box>
         <Box padding="20px">
-          <Text fontSize="25px">
-            Test Topic : {test?.testCategory}
-          </Text>
-          <Text fontSize="25px">
-            Maximum Time : {test?.time_to_finish}
-          </Text>
-          <Text fontSize="25px">
-            Passing Marks : {test?.passingMarks}
-          </Text>
+          <Text fontSize="25px">Test Topic : {test?.testCategory}</Text>
+          <Text fontSize="25px">Maximum Time : {test?.time_to_finish}</Text>
+          <Text fontSize="25px">Passing Marks : {test?.passingMarks}</Text>
           <Text mt="1%" color="red" fontWeight="bold" fontSize="20px">
             Remaining Marks for the Questios to be added{" "}
             {test?.remaingMarksQuestionsTobeAdded}

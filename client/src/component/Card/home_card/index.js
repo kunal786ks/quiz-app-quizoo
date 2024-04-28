@@ -12,7 +12,6 @@ const HomePageCard = () => {
   const token = useSelector((state) => state.user?.token);
   const fetchData = async () => {
     try {
-      console.log("he;;p");
       const response = await axios.get(
         `http://localhost:8084/api/test/get-test?page=${page}&limit=4`,
         {
@@ -26,7 +25,6 @@ const HomePageCard = () => {
       setTotalTest(response.data.tests.totalRecords); // Set total results from response
     } catch (error) { }
   };
-  console.log(test)
   useEffect(() => {
     fetchData();
   }, []);

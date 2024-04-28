@@ -137,16 +137,11 @@ const getTestByID = async (req) => {
     }
     const userId = req.user._id;
     const userLoggedIn = await userModel.findById(userId);
-    if (userLoggedIn.role === 0) {
-      throw Object.assign(new Error(), {
-        name: "UNAUTHORIZED",
-        message: "You are restricted for this action",
-      });
-    }
+    
 
     const testFound = await TestModel.findById(Id);
 
-    if ((userLoggedIn._id.toString() !== testFound.owner.toString()) && userLoggedIn.role!==2) {
+    if ((userLoggedIn._id.toString() !== testFound.owner.toString()) && userLoggedIn.role===1) {
       throw Object.assign(new Error(), {
         name: "UNAUTHORIZED",
         message: "You are not owner of this test",

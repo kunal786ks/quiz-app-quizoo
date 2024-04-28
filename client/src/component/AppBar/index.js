@@ -27,6 +27,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { logoutUser } from "../../feature/user/userSlice";
 import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { userLoggedOut } from "../../feature/test_user/testSlice";
 const AppBar = () => {
   const [search, setSearch] = useState("");
   const [test, setTest] = useState([]);
@@ -43,6 +44,7 @@ const AppBar = () => {
   };
   const handleLogout = () => {
     dispatch(logoutUser());
+    dispatch(userLoggedOut())
     navigate("/login");
   };
   const toast = useToast();
@@ -58,7 +60,6 @@ const AppBar = () => {
       return;
     }
     try {
-      console.log("he;;p");
       const response = await axios.get(
         `http://localhost:8084/api/test/get-test?search=${search}`,
         {
