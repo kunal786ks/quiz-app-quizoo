@@ -29,7 +29,7 @@ const testSlice = createSlice({
       }
     },
     viewTest: (state, { payload }) => {
-      console.log(payload);
+      console.log(payload,"tjosos view test");
       state.test_id = payload;
     },
     userLoggedOut: (state) => {
@@ -38,6 +38,9 @@ const testSlice = createSlice({
       state.time_to_finsh = 0;
       state.questionAndAnsByuser = [];
     },
+    clearPreviousTestData:(state)=>{
+      state.questionAndAnsByuser=[];
+    }
   },
   
   extraReducers: (builder) => {
@@ -56,7 +59,7 @@ const testSlice = createSlice({
   },
 });
 
-export const { setTimer, viewTest, answeringQuestion, userLoggedOut } =
+export const { setTimer, viewTest, answeringQuestion, userLoggedOut,clearPreviousTestData } =
   testSlice.actions;
 
 export default testSlice.reducer;

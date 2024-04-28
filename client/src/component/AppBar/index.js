@@ -27,7 +27,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { logoutUser } from "../../feature/user/userSlice";
 import axios from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { userLoggedOut } from "../../feature/test_user/testSlice";
+import { userLoggedOut, viewTest } from "../../feature/test_user/testSlice";
+import SearchTestCard from "../Card/Search_test_card";
 const AppBar = () => {
   const [search, setSearch] = useState("");
   const [test, setTest] = useState([]);
@@ -71,6 +72,10 @@ const AppBar = () => {
       setTest(response.data.tests.records);
     } catch (error) {}
   };
+
+  const handleTestView=(testId)=>{
+    
+  }
   return (
     <Box
       position="fixed"
@@ -162,8 +167,8 @@ const AppBar = () => {
               <PopoverBody height="400px" overflowY="scroll">
                 {test?.length > 0
                   ? test?.map((test, index) => (
-                      <Text key={index} h="100px">
-                        {test?.title}
+                      <Text key={index} h="100px" _hover={{bg:'gray'}} padding="4px" cursor="pointer" >
+                        <SearchTestCard test={test}/>
                       </Text>
                     ))
                   : "No Data Found"}

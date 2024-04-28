@@ -14,7 +14,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import InfoIcon from "@mui/icons-material/Info";
 import { useNavigate } from "react-router-dom";
-import { viewTest } from "../../feature/test_user/testSlice";
+import { clearPreviousTestData, viewTest } from "../../feature/test_user/testSlice";
 const ViewTest = () => {
   const [test, setTest] = useState();
   const [totalQues, setTotalQues] = useState();
@@ -27,6 +27,7 @@ const ViewTest = () => {
 
   const handleTakeTest=()=>{
     dispatch(viewTest(testId))
+    dispatch(clearPreviousTestData())
     navigate("/home/take-test")
   }
   const fetchQuestions = async () => {
